@@ -1,9 +1,11 @@
 import requests
+import sys
 
 base_url = None
 
 def auth(args):
 
+    print("[CONNECTING] Trying to connect to the Proxmox server...")
     if args.nossl:
         requests.packages.urllib3.disable_warnings()
 
@@ -16,22 +18,25 @@ def auth(args):
     data = res.json()
 
     if not data["data"]:
-        raise SystemExit("Povezava z danimi podatki ni uspela!")
+        raise SystemExit("[ERROR] Povezava z danimi podatki ni uspela!")
 
     ticket = data["data"]["ticket"]
-
+    print("[CONNECTED] Successfully connected!")
     return ticket
 
 def get_notes(args):
+    print("[RETRIEVING] Retrieving all Proxmox virtual machines")
     ticket = auth(args)
     cookie = {"PVEAuthCookie": ticket}
     url = f"{base_url}/cluster/resources"
 
     res = requests.get(url, cookies=cookie, params={"type": "vm"}, verify=args.ssl)
     data = res.json()
-
-    notes = []
+    print(f"[RETRIEVING] Successfully retrieved {len(data['data'])} virtual machines")
     
+    print("[READING] Reading notes from every VM")
+    notes = []
+
     for vm in data["data"]:
         url = f"{base_url}/nodes/{vm['node']}/qemu/{vm['vmid']}/config"
 
@@ -41,6 +46,6 @@ def get_notes(args):
         if (data["data"]):
             note = (data["data"]["name"], data["data"]["description"])
             notes.append(note)
+    print("[READING] Successfully read all notes")
     
     return notes
-    

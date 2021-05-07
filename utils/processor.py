@@ -1,7 +1,9 @@
 from yaml import safe_load
+import sys
 
 
 def process_notes(platform, notes):
+    print("[MARKDOWN] Started markdown processing")
     with open(f"{platform}.md", "w") as f:
         for vm in notes:
             ime = vm[0]
@@ -21,7 +23,8 @@ def process_notes(platform, notes):
 
                 f.write(f"## {ime}\n")
                 f.write(markdown)
-
+                print(f"[MARKDOWN] {ime} added to the markdown file")
             except Exception as e:
-                pass
-                
+                print(f"[ERROR] {ime} wrong yaml format", file=sys.stderr)
+
+    print("[MARKDOWN] Markdown processing finished")

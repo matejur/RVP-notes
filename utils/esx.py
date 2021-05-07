@@ -1,10 +1,12 @@
 import atexit
 from pyVim.connect import SmartConnect, Disconnect
 from pyVmomi import vim
+import sys
 
 def connect(args):
     instance = None
 
+    print("[CONNECTING] Trying to connect to the ESX server...")
     try:
         if args.nossl:
             instance = SmartConnect(host=args.host, user=args.user, pwd=args.pwd, port=args.port, disableSslCertValidation=True)
@@ -14,19 +16,21 @@ def connect(args):
         atexit.register(Disconnect, instance)
     
     except IOError as e:
-        print(e)
+        print("[ERROR] " + e.msg, file=sys.stderr)
 
     except vim.fault.InvalidLogin as e:
-        print(e.msg)
+        print("[ERROR] " + e.msg, file=sys.stderr)
 
     if not instance:
-        raise SystemExit("Povezava z danimi podatki ni uspela!")
+        raise SystemExit("[ERROR] Povezava z danimi podatki ni uspela!")
 
+    print("[CONNECTED] Successfully connected!")
     return instance
 
 def get_VMs(args):
     instance = connect(args)
     try:
+        print("[RETRIEVING] Retrieving all ESX virtual machines")
         content = instance.RetrieveContent()
 
         container = content.rootFolder
@@ -36,21 +40,23 @@ def get_VMs(args):
         container_view = content.viewManager.CreateContainerView(container, types, recursive)
 
         children = container_view.view
-
+        print(f"[RETRIEVING] Successfully retrieved {len(children)} virtual machines")
         return children
 
     except Exception as e:
-        print(e)
-        raise SystemExit("Napaka pri pridobivanju VM-ov.")
+        print("[ERROR] " + e)
+        raise SystemExit("[ERROR] Napaka pri pridobivanju VM-ov.")
             
 def get_notes(args):
     vms = get_VMs(args)
 
     notes = []
-
+    
+    print("[READING] Reading notes from every VM")
     for vm in vms:
         note = (vm.summary.config.name, vm.summary.config.annotation)
         notes.append(note)
-    
+
+    print("[READING] Successfully read all notes")
+
     return notes
-    
