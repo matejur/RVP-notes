@@ -25,11 +25,11 @@ def auth(args):
     return ticket
 
 def get_notes(args):
-    print("[RETRIEVING] Retrieving all Proxmox virtual machines")
     ticket = auth(args)
     cookie = {"PVEAuthCookie": ticket}
     url = f"{base_url}/cluster/resources"
 
+    print("[RETRIEVING] Retrieving all Proxmox virtual machines")
     res = requests.get(url, cookies=cookie, params={"type": "vm"}, verify=args["ssl"])
     data = res.json()
     print(f"[RETRIEVING] Successfully retrieved {len(data['data'])} virtual machines")
@@ -46,6 +46,7 @@ def get_notes(args):
         if (data["data"]):
             note = (data["data"]["name"], data["data"]["description"])
             notes.append(note)
+            
     print("[READING] Successfully read all notes")
     
     return notes

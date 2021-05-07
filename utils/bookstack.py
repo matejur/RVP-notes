@@ -25,8 +25,12 @@ def upload(platform, creds, content):
     base_url = f"http://{creds['host']}:{creds['port']}"
 
     url = f"{base_url}/api/chapters/{creds['chapter']}"
+    print("[BOOKSTACK] Trying to connect to the BookStack wiki")
 
-    res = requests.get(url, headers=auth)
+    try:
+        res = requests.get(url, headers=auth)
+    except Exception as e:
+        raise SystemExit("[ERROR] Povezava na BookStack z danimi podatki ni uspela!")
     
     for page in res.json()["pages"]:
         if page["name"] == platform:
