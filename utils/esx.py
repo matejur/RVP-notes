@@ -49,6 +49,8 @@ def get_notes(args):
     notes = []
 
     for vm in vms:
-        notes.append(vm.summary.config.annotation)
+        note = (vm.summary.config.name, vm.summary.config.annotation)
+        notes.append(note)
     
     return notes
+    

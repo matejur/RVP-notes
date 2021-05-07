@@ -39,6 +39,8 @@ def get_notes(args):
         data = res.json()
         
         if (data["data"]):
-            notes.append(data["data"]["description"])
+            note = (data["data"]["name"], data["data"]["description"])
+            notes.append(note)
     
     return notes
+    

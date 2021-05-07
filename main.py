@@ -34,4 +34,4 @@ elif platform == "proxmox":
     
     notes = proxmox.get_notes(args)
 
-processor.process_notes(notes)
+processor.process_notes(platform, notes)
