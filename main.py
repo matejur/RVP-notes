@@ -1,5 +1,5 @@
 import argparse
-from utils import esx, proxmox, processor
+from utils import esx, proxmox, processor, bookstack
 import configparser 
 
 
@@ -23,6 +23,20 @@ def read_credentials(platform, file):
 
     return creds
 
+def bookstack_creds(file):
+    config = configparser.ConfigParser()
+    config.read(file)
+
+    creds = {}
+    creds["id"] = config.get("bookstack", "token_id")
+    creds["secret"] = config.get("bookstack", "token_secret")
+    creds["host"] = config.get("bookstack", "host")
+    creds["port"] = config.get("bookstack", "port")
+    creds["ssl"] = config.getboolean("bookstack", "ssl")
+    creds["chapter"] = config.get("bookstack", "chapter_id")
+
+    return creds
+
 
 args = get_args()
 platform = args.platform
@@ -34,4 +48,8 @@ if platform == "esx":
 elif platform == "proxmox":   
     notes = proxmox.get_notes(creds)
 
-processor.process_notes(platform, notes)
+markdown = processor.process_notes(platform, notes)
+
+creds = bookstack_creds(args.file)
+
+bookstack.upload(platform, creds, markdown)
