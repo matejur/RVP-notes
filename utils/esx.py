@@ -8,15 +8,16 @@ def connect(args):
 
     print("[CONNECTING] Trying to connect to the ESX server...")
     try:
-        if args.nossl:
-            instance = SmartConnect(host=args.host, user=args.user, pwd=args.pwd, port=args.port, disableSslCertValidation=True)
+        if args["ssl"]:
+            instance = SmartConnect(host=args["host"], user=args["user"], pwd=args["pwd"], port=args["port"])
         else:
-            instance = SmartConnect(host=args.host, user=args.user, pwd=args.pwd, port=args.port)
+            instance = SmartConnect(host=args["host"], user=args["user"], pwd=args["pwd"], port=args["port"], disableSslCertValidation=True)
+            
 
         atexit.register(Disconnect, instance)
     
     except IOError as e:
-        print("[ERROR] " + e.msg, file=sys.stderr)
+        print("[ERROR] IOError", file=sys.stderr)
 
     except vim.fault.InvalidLogin as e:
         print("[ERROR] " + e.msg, file=sys.stderr)

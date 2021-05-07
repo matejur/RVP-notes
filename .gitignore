@@ -3,3 +3,4 @@ env/
 __pycache__/
 esx.md
 proxmox.md
+config.txt
