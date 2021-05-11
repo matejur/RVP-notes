@@ -33,7 +33,7 @@ def bookstack_creds(file):
     creds["host"] = config.get("bookstack", "host")
     creds["port"] = config.get("bookstack", "port")
     creds["ssl"] = config.getboolean("bookstack", "ssl")
-    creds["chapter"] = config.get("bookstack", "chapter_id")
+    creds["chapter"] = config.get("bookstack", "chapter_name")
 
     return creds
 
