@@ -17,7 +17,7 @@ def process_notes(platform, notes):
             current += f"- Provides: `{', '.join(note['provides'])}`\n"
             current += f"- Service type: `{', '.join(note['type_of_service'])}`\n"
             current += f"- Dependencies: `{', '.join(note['depends_on'])}`\n"
-            current += f"- Description:\n ```{note['description']}```\n"
+            current += f"- Description:\n ```\n{note['description']}```\n"
             current += f"- Authentication: `{note['authentication']}`\n"
             current += f"- Last update: `{note['last_update']}`\n\n***\n\n"
 
