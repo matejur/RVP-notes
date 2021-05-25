@@ -12,9 +12,12 @@ def auth(args):
     global base_url
     base_url = f"https://{args['host']}:{args['port']}/api2/json"
     url = f"{base_url}/access/ticket"
-    payload = f"username={args['user']}&password={args['pwd']}"
+    payload = {
+        "username": args['user'],
+        "password": args['pwd']
+    }
 
-    res = requests.post(url, data=payload, verify=args["ssl"])
+    res = requests.post(url, json=payload, verify=args["ssl"])
     data = res.json()
 
     if not data["data"]:

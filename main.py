@@ -52,7 +52,7 @@ def process_system(system, creds, config):
 
 args = get_args()
 
-config = configparser.ConfigParser()
+config = configparser.RawConfigParser()
 config.read(args.file)
 
 system = args.system
