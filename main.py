@@ -5,28 +5,23 @@ import configparser
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("platform", choices=["esx", "proxmox"])
-    parser.add_argument("--file")
+    parser.add_argument("system", help="System name from config file")
+    parser.add_argument("file", help="Config file location")
 
     return parser.parse_args()
 
-def read_credentials(platform, file):
-    config = configparser.ConfigParser()
-    config.read(file)
-
+def read_credentials(config, system):
     creds = {}
-    creds["user"]= config.get(platform, "user")
-    creds["pwd"] = config.get(platform, "pwd")
-    creds["host"] = config.get(platform, "host")
-    creds["ssl"] = config.getboolean(platform, "ssl")
-    creds["port"] = config.get(platform, "port")
+    creds["platform"] = config.get(system, "platform")
+    creds["user"]= config.get(system, "user")
+    creds["pwd"] = config.get(system, "pwd")
+    creds["host"] = config.get(system, "host")
+    creds["ssl"] = config.getboolean(system, "ssl")
+    creds["port"] = config.get(system, "port")
 
     return creds
 
-def bookstack_creds(file):
-    config = configparser.ConfigParser()
-    config.read(file)
-
+def bookstack_creds(config):
     creds = {}
     creds["id"] = config.get("bookstack", "token_id")
     creds["secret"] = config.get("bookstack", "token_secret")
@@ -37,19 +32,41 @@ def bookstack_creds(file):
 
     return creds
 
+def process_system(system, creds, config):
+    print(f"[STARTING] Started processing {system}")
+    if creds["platform"] == "esx":
+        notes = esx.get_notes(creds)
+
+    elif creds["platform"] == "proxmox":   
+        notes = proxmox.get_notes(creds)
+
+    else:
+        raise SystemExit(f"[ERROR] Platform {creds['platform']} is not supported!")
+
+    markdown = processor.process_notes(system, notes)
+
+    creds = bookstack_creds(config)
+
+    bookstack.upload(system, creds, markdown)
+    print(f"[FINISHED] Finished processing {system}")
 
 args = get_args()
-platform = args.platform
-creds = read_credentials(platform, args.file)
 
-if platform == "esx":
-    notes = esx.get_notes(creds)
+config = configparser.ConfigParser()
+config.read(args.file)
 
-elif platform == "proxmox":   
-    notes = proxmox.get_notes(creds)
+system = args.system
+if system == "bookstack":
+    raise SystemExit("[ERROR] This name is reserved for BookStack...")
 
-markdown = processor.process_notes(platform, notes)
+if system == "all":
+    for sys in config.sections():
+        if sys != "bookstack":
+            creds = read_credentials(config, sys)
+            process_system(sys, creds, config)
 
-creds = bookstack_creds(args.file)
-
-bookstack.upload(platform, creds, markdown)
+elif system in config:
+    creds = read_credentials(config, system)
+    process_system(system, creds, config)
+else:
+    raise SystemExit("[ERROR] There is no config entry for this system...")
