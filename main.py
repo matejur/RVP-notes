@@ -43,7 +43,7 @@ def process_system(system, creds, config):
     else:
         raise SystemExit(f"[ERROR] Platform {creds['platform']} is not supported!")
 
-    markdown = processor.process_notes(system, notes)
+    markdown = processor.process_notes(notes)
 
     creds = bookstack_creds(config)
 
