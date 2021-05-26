@@ -21,7 +21,7 @@ def auth(args):
     data = res.json()
 
     if not data["data"]:
-        raise SystemExit("[ERROR] Povezava z danimi podatki ni uspela!")
+        raise SystemExit("[ERROR] Povezava z danimi podatki ni uspela!", file=sys.stderr)
 
     ticket = data["data"]["ticket"]
     print("[CONNECTED] Successfully connected!")
@@ -44,10 +44,10 @@ def get_notes(args):
         url = f"{base_url}/nodes/{vm['node']}/qemu/{vm['vmid']}/config"
 
         res = requests.get(url, cookies=cookie, verify=args["ssl"])
-        data = res.json()
-        
-        if (data["data"]):
-            note = (data["data"]["name"], data["data"]["description"])
+        vm_data = res.json()
+
+        if (vm_data["data"]):
+            note = (vm_data["data"]["name"], vm_data["data"]["description"] if "description" in vm_data["data"] else None)
             notes.append(note)
             
     print("[READING] Successfully read all notes")
