@@ -13,6 +13,9 @@ def process_notes(notes):
             try:
                 note = safe_load(vm[1])
 
+                if type(note) is str:
+                    raise TypeError
+
                 err_msg = "PODATKA NI V YAMLu"
 
                 owner = note["owner"] if "owner" in note else err_msg
@@ -40,7 +43,7 @@ def process_notes(notes):
                 print(f"[MARKDOWN] {ime} added to the markdown file")
             except:
                 print(f"[MARKDOWN] {ime} has a broken yaml format")
-                markdown += "Broken yaml format\n"
+                markdown += "Broken yaml format:\n"
                 markdown += f"```\n{vm[1]}\n```"
         else:
             markdown += "Virtualka/container nima polja notes"
