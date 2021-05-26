@@ -41,14 +41,18 @@ def get_notes(args):
     notes = []
 
     for vm in data["data"]:
-        url = f"{base_url}/nodes/{vm['node']}/qemu/{vm['vmid']}/config"
+        if vm["type"] == "qemu":
+            url = f"{base_url}/nodes/{vm['node']}/qemu/{vm['vmid']}/config"
+        elif vm["type"] == "lxc":
+            url = f"{base_url}/nodes/{vm['node']}/lxc/{vm['vmid']}/config"
 
         res = requests.get(url, cookies=cookie, verify=args["ssl"])
         vm_data = res.json()
-
         if (vm_data["data"]):
-            note = (vm_data["data"]["name"], vm_data["data"]["description"] if "description" in vm_data["data"] else None)
-            notes.append(note)
+            ime = vm_data["data"]["name"] if "name" in vm_data["data"] else vm_data["data"]["hostname"]
+            note = vm_data["data"]["description"] if "description" in vm_data["data"] else None
+
+            notes.append((ime, note))
             
     print("[READING] Successfully read all notes")
     
