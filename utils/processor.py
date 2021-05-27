@@ -1,6 +1,7 @@
 from yaml import safe_load
-import sys
 
+def check(note, field):
+    return field in note and note[field]
 
 def process_notes(notes):
     print("[MARKDOWN] Started markdown processing")
@@ -16,17 +17,17 @@ def process_notes(notes):
                 if type(note) is str:
                     raise TypeError
 
-                err_msg = "PODATKA NI V YAMLu"
+                err_msg = "PODATEK MANJKA"
 
-                owner = note["owner"] if "owner" in note else err_msg
-                admins = ', '.join(note['administrators']) if "administrators" in note else err_msg
-                users = ', '.join(note['users']) if "users" in note else err_msg
-                provides = ', '.join(note['provides']) if "provides" in note else err_msg
-                service = ', '.join(note['type_of_service']) if "type_of_service" in note else err_msg
-                dependencies = ', '.join(note['depends_on']) if "depends_on" in note else err_msg
-                desc = f"```\n{note['description']}\n```" if "description" in note else err_msg
-                auth = note['authentication'] if "authentication" in note else err_msg
-                last = note['last_update'] if "last_update" in note else err_msg
+                owner = note["owner"]                           if check(note, "owner") else err_msg
+                admins = ', '.join(note['administrators'])      if check(note, "administrators") else err_msg
+                users = ', '.join(note['users'])                if check(note, "users") else err_msg
+                provides = ', '.join(note['provides'])          if check(note, "provides") else err_msg
+                service = ', '.join(note['type_of_service'])    if check(note, "type_of_service") else err_msg
+                dependencies = ', '.join(note['depends_on'])    if check(note, "depends_on") else err_msg
+                desc = f"```\n{note['description']}\n```"       if check(note, "description") else err_msg
+                auth = note['authentication']                   if check(note, "authentication") else err_msg
+                last = note['last_update']                      if check(note, "last_update") else err_msg
 
                 current = ""
                 current += f"- Owner: `{owner}`\n"
