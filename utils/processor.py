@@ -42,10 +42,18 @@ def process_notes(notes):
 
                 markdown += current
                 print(f"[MARKDOWN] {ime} added to the markdown file")
-            except:
-                print(f"[MARKDOWN] {ime} has a broken yaml format")
-                markdown += "Broken yaml format:\n"
+
+            except TypeError:
+                print(f"[MARKDOWN] {ime} note is not a yaml format")
+                markdown += "Polje notes ni v YAML formatu:\n"
                 markdown += f"```\n{vm[1]}\n```"
+
+            except Exception as e:
+                print(f"[MARKDOWN] {ime} broken yaml format")
+                markdown += "Pri obdelavi YAMLa je prišlo do napake:\n"
+                markdown += f"```\n{e.context_mark}\n```\n"
+                markdown += f"```\n{vm[1]}\n```"
+
         else:
             markdown += "Virtualka/container nima polja notes"
             print(f"[MARKDOWN] {ime} has nothing inside \"notes\"")
