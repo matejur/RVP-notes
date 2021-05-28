@@ -5,14 +5,14 @@
 ```
 pip install -r requirements.txt
 
-python3 main.py <system> <config_file>      # pridobi podatke sistema <system>
+python3 main.py <system_name> <config_file>      # pridobi podatke sistema <system>
 python3 main.py all <config_file>           # pridobi podatke vseh sistemov
 ```
 
 ## Config file
 Vsak sistem mora imeti svoj vnos v config datoteki:
 ```
-[<system>]                  # Takšno bo tudi ime odseka na BookStack strani
+[<system_name>]                  # Takšno bo tudi ime odseka na BookStack strani
 platform = [esx | proxmox] 
 user = <username>           # Pri proxmoxu mora vsebovati tudi realm (e.g. matej@pam)
 pwd = <password>
@@ -34,9 +34,9 @@ page_name = <page_name>     # Book in page morate ustvariti sami
 ```
 
 ## Primer uporabe
-Primer config datoteke za sistema "esx" in "proxmox" in uporaba programa:
+Primer config datoteke za sistema "esx_sistem" in "proxmox_sistem" in uporaba programa:
 ```
-[esx]
+[esx_sistem]
 platform = esx
 user = <esx_username>
 pwd = <esx_password>
@@ -44,7 +44,7 @@ host = <esx_host>
 ssl = [True | False]
 port = 443
 
-[proxmox]
+[proxmox_sistem]
 platform = proxmox
 user = <proxmox_username>
 pwd = <proxmox_password>
@@ -62,8 +62,8 @@ book_name = <book_name>
 page_name = <page_name>
 ```
 ```
-python3 main.py esx config.txt      # prejme podatke sistema opisanega pod [esx]
-python3 main.py proxmox config.txt  # prejme podatke sistema opisanega pod [proxmox]
-python3 main.py all config.txt      # prejme podatke obeh sistemov
+python3 main.py esx_sistem config.txt       # prejme podatke sistema opisanega pod [esx]
+python3 main.py proxmox_sistem config.txt   # prejme podatke sistema opisanega pod [proxmox]
+python3 main.py all config.txt              # prejme podatke obeh sistemov
 ```
 
