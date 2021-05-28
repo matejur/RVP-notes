@@ -19,7 +19,7 @@ def update_content(system, page, new_contnet):
     old_page = api_call(f"{base_url}/api/pages/{page}")["html"]
 
     if not old_page:
-        return "Ta vrstica je potrebna, ker BookStack ne shrani komentarjev na začetku markdowna (potrebujem jih za posodabljanje sistemov znotraj strani)\n" + new_contnet
+        return "<p></p>" + new_contnet
 
     split1 = old_page.split(f"<!-- SYSTEM START {system} -->")
     if (len(split1) == 2):
@@ -63,7 +63,6 @@ def page_from_name(creds):
             return page["id"], page["book_id"]
     else:
         raise SystemExit(f"[ERROR] Page {creds['page']} was not found inside {creds['book']}! Create it and try again...")
-
 
 def upload(system, creds, content):
     global auth, base_url
