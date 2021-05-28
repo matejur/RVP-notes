@@ -5,14 +5,14 @@
 ```
 pip install -r requirements.txt
 
-python3 main.py <system_name> <config_file>      # pridobi podatke sistema <system>
-python3 main.py all <config_file>           # pridobi podatke vseh sistemov
+python3 main.py <system_name> <config_file>       # pridobi podatke sistema <system>
+python3 main.py all <config_file>                 # pridobi podatke vseh sistemov
 ```
 
 ## Config file
 Vsak sistem mora imeti svoj vnos v config datoteki:
 ```
-[<system_name>]                  # Takšno bo tudi ime odseka na BookStack strani
+[<system_name>]             # Takšno bo tudi ime odseka na BookStack strani
 platform = [esx | proxmox] 
 user = <username>           # Pri proxmoxu mora vsebovati tudi realm (e.g. matej@pam)
 pwd = <password>
@@ -62,8 +62,8 @@ book_name = <book_name>
 page_name = <page_name>
 ```
 ```
-python3 main.py esx_sistem config.txt       # prejme podatke sistema opisanega pod [esx]
-python3 main.py proxmox_sistem config.txt   # prejme podatke sistema opisanega pod [proxmox]
+python3 main.py esx_sistem config.txt       # prejme podatke sistema opisanega pod [esx_sistem]
+python3 main.py proxmox_sistem config.txt   # prejme podatke sistema opisanega pod [proxmox_sistem]
 python3 main.py all config.txt              # prejme podatke obeh sistemov
 ```
 
