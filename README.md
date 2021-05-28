@@ -12,7 +12,7 @@ python3 main.py all <config_file>           # pridobi podatke vseh sistemov
 ## Config file
 Vsak sistem mora imeti svoj vnos v config datoteki:
 ```
-[<system>]                  # Takšno bo tudi ime strani na BookStacku
+[<system>]                  # Takšno bo tudi ime odseka na BookStack strani
 platform = [esx | proxmox] 
 user = <username>           # Pri proxmoxu mora vsebovati tudi realm (e.g. matej@pam)
 pwd = <password>
@@ -30,7 +30,7 @@ host = <bookstack_host>
 port = 6875
 ssl = [True | False]
 book_name = <book_name>     # Podatki se bodo shranili na strani <page_name> v knjigi <book_name>
-page_name = <page_name>
+page_name = <page_name>     # Book in page morate ustvariti sami
 ```
 
 ## Primer uporabe
@@ -58,7 +58,8 @@ token_secret = <bookstack_api_secret>
 host = <bookstack_host>
 port = 6875
 ssl = [True | False]               
-chapter_name = <chapter_name>
+book_name = <book_name>
+page_name = <page_name>
 ```
 ```
 python3 main.py esx config.txt      # prejme podatke sistema opisanega pod [esx]
