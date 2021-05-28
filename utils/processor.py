@@ -10,12 +10,13 @@ class VirtualMachine:
 def check(note, field):
     return field in note and note[field]
 
-def process_notes(notes):
+def process_notes(system, notes):
     print("[MARKDOWN] Started markdown processing")
-    markdown = ""
+    markdown = f"<!-- SYSTEM START {system} -->\n\n"
+    markdown += f"# {system}\n"
     for vm in sorted(notes):
         ime = vm.name
-        markdown += f"## {ime}\n"
+        markdown += f"### {ime}\n"
 
         if vm.note:
             try:
@@ -71,5 +72,6 @@ def process_notes(notes):
 
         markdown += "\n***\n\n"
 
+    markdown += f"<!-- SYSTEM END {system} -->\n"
     print("[MARKDOWN] Markdown processing finished")
     return markdown

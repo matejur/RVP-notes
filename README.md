@@ -29,7 +29,8 @@ token_secret = <bookstack_api_secret>
 host = <bookstack_host>
 port = 6875
 ssl = [True | False]
-chapter_name = <chapter_name>       # v chapterju se bo naredila strani za vsak sistem
+book_name = <book_name>     # Podatki se bodo shranili na strani <page_name> v knjigi <book_name>
+page_name = <page_name>
 ```
 
 ## Primer uporabe

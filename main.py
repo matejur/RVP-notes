@@ -28,12 +28,14 @@ def bookstack_creds(config):
     creds["host"] = config.get("bookstack", "host")
     creds["port"] = config.get("bookstack", "port")
     creds["ssl"] = config.getboolean("bookstack", "ssl")
-    creds["chapter"] = config.get("bookstack", "chapter_name")
+    creds["book"] = config.get("bookstack", "book_name")
+    creds["page"] = config.get("bookstack", "page_name")
 
     return creds
 
-def process_system(system, creds, config):
+def process_system(system, config):
     print(f"[STARTING] Started processing {system}")
+    creds = read_credentials(config, system)
     if creds["platform"] == "esx":
         notes = esx.get_notes(creds)
 
@@ -43,7 +45,7 @@ def process_system(system, creds, config):
     else:
         raise SystemExit(f"[ERROR] Platform {creds['platform']} is not supported!")
 
-    markdown = processor.process_notes(notes)
+    markdown = processor.process_notes(system, notes)
 
     creds = bookstack_creds(config)
 
@@ -62,11 +64,9 @@ if system == "bookstack":
 if system == "all":
     for sys in config.sections():
         if sys != "bookstack":
-            creds = read_credentials(config, sys)
-            process_system(sys, creds, config)
+            process_system(sys, config)
 
 elif system in config:
-    creds = read_credentials(config, system)
-    process_system(system, creds, config)
+    process_system(system, config)
 else:
     raise SystemExit("[ERROR] There is no config entry for this system...")
