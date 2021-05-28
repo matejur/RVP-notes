@@ -1,3 +1,4 @@
+from utils.processor import VirtualMachine
 import requests
 import sys
 
@@ -52,7 +53,7 @@ def get_notes(args):
             ime = vm_data["data"]["name"] if "name" in vm_data["data"] else vm_data["data"]["hostname"]
             note = vm_data["data"]["description"] if "description" in vm_data["data"] else None
 
-            notes.append((ime, note))
+            notes.append(VirtualMachine(ime, note))
             
     print("[READING] Successfully read all notes")
     

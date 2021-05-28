@@ -2,6 +2,7 @@ import atexit
 from pyVim.connect import SmartConnect, Disconnect
 from pyVmomi import vim
 import sys
+from .processor import VirtualMachine
 
 def connect(args):
     instance = None
@@ -55,8 +56,7 @@ def get_notes(args):
     
     print("[READING] Reading notes from every VM")
     for vm in vms:
-        note = (vm.summary.config.name, vm.summary.config.annotation)
-        notes.append(note)
+        notes.append(VirtualMachine(vm.summary.config.name, vm.summary.config.annotation))
 
     print("[READING] Successfully read all notes")
 

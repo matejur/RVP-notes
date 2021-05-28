@@ -1,4 +1,11 @@
 from yaml import safe_load
+from dataclasses import dataclass
+
+
+@dataclass(order=True)
+class VirtualMachine:
+    name: str
+    note: str
 
 def check(note, field):
     return field in note and note[field]
@@ -6,13 +13,13 @@ def check(note, field):
 def process_notes(notes):
     print("[MARKDOWN] Started markdown processing")
     markdown = ""
-    for vm in notes:
-        ime = vm[0]
+    for vm in sorted(notes):
+        ime = vm.name
         markdown += f"## {ime}\n"
 
-        if vm[1]:
+        if vm.note:
             try:
-                note = safe_load(vm[1])
+                note = safe_load(vm.note)
 
                 if type(note) is str:
                     raise TypeError
@@ -25,7 +32,7 @@ def process_notes(notes):
                 provides = ', '.join(note['provides'])          if check(note, "provides") else err_msg
                 service = ', '.join(note['type_of_service'])    if check(note, "type_of_service") else err_msg
                 dependencies = ', '.join(note['depends_on'])    if check(note, "depends_on") else err_msg
-                desc = f"```\n{note['description']}\n```"       if check(note, "description") else err_msg
+                desc = note['description']                      if check(note, "description") else err_msg
                 auth = note['authentication']                   if check(note, "authentication") else err_msg
                 last = note['last_update']                      if check(note, "last_update") else err_msg
 
@@ -36,7 +43,7 @@ def process_notes(notes):
                 current += f"- Provides: `{provides}`\n"
                 current += f"- Service type: `{service}`\n"
                 current += f"- Dependencies: `{dependencies}`\n"
-                current += f"- Description:\n {desc}\n"
+                current += f"- Description:\n ```\n{desc}\n```\n"
                 current += f"- Authentication: `{auth}`\n"
                 current += f"- Last update: `{last}`"
 
@@ -46,13 +53,17 @@ def process_notes(notes):
             except TypeError:
                 print(f"[MARKDOWN] {ime} note is not a yaml format")
                 markdown += "Polje notes ni v YAML formatu:\n"
-                markdown += f"```\n{vm[1]}\n```"
+                markdown += f"```\n{vm.note}\n```"
 
             except Exception as e:
                 print(f"[MARKDOWN] {ime} broken yaml format")
-                markdown += "Pri obdelavi YAMLa je prišlo do napake:\n"
-                markdown += f"```\n{e.context_mark}\n```\n"
-                markdown += f"```\n{vm[1]}\n```"
+                if hasattr(e, "context_mark"):
+                    markdown += "Pri obdelavi YAMLa je prišlo do napake:\n"
+                    markdown += f"```\n{e.context_mark}\n```\n"
+                else:
+                    markdown += "Pri obdelavi YAMLa je prišlo do neznane napake:\n"
+
+                markdown += f"```\n{vm.note}\n```"
 
         else:
             markdown += "Virtualka/container nima polja notes"
