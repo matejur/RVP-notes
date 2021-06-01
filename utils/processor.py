@@ -6,6 +6,8 @@ from dataclasses import dataclass
 class VirtualMachine:
     name: str
     note: str
+    memory: int
+    ip: str
 
 def check(note, field):
     return field in note and note[field]
@@ -70,6 +72,8 @@ def process_notes(system, notes):
             markdown += "Virtualka/container nima polja notes"
             print(f"[MARKDOWN] {ime} has nothing inside \"notes\"")
 
+        markdown += f"\n - RAM: `{vm.memory} MB`"
+        markdown += f"\n - IP: `{vm.ip}`"
         markdown += "\n***\n\n"
 
     markdown += f"<!-- SYSTEM END {system} -->\n"

@@ -56,7 +56,7 @@ def get_notes(args):
     
     print("[READING] Reading notes from every VM")
     for vm in vms:
-        notes.append(VirtualMachine(vm.summary.config.name, vm.summary.config.annotation))
+        notes.append(VirtualMachine(vm.summary.config.name, vm.summary.config.annotation, vm.summary.config.memorySizeMB, vm.guest.ipAddress))
 
     print("[READING] Successfully read all notes")
 

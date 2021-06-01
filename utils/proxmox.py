@@ -52,8 +52,19 @@ def get_notes(args):
         if (vm_data["data"]):
             ime = vm_data["data"]["name"] if "name" in vm_data["data"] else vm_data["data"]["hostname"]
             note = vm_data["data"]["description"] if "description" in vm_data["data"] else None
+            memory = vm_data["data"]["memory"] if "memory" in vm_data["data"] else None
 
-            notes.append(VirtualMachine(ime, note))
+            ip = "IP naslovov LXC containerjev še nisem uspel dobiti"
+
+            if vm["type"] == "qemu":
+                url = f"{base_url}/nodes/{vm['node']}/qemu/{vm['vmid']}/agent/network-get-interfaces"
+                res = requests.get(url, cookies=cookie, verify=args["ssl"])
+                try:
+                    ip = res.json()["data"]["result"][1]["ip-addresses"][0]["ip-address"]
+                except:
+                    ip = "VM nima qemu-guest-agenta"
+
+            notes.append(VirtualMachine(ime, note, memory, ip))
             
     print("[READING] Successfully read all notes")
     
