@@ -1,5 +1,6 @@
 import requests
 import sys
+from . import processor
 
 auth = {}
 base_url = ""
@@ -18,15 +19,8 @@ def api_call(url):
 def update_content(system, page, new_contnet):
     old_page = api_call(f"{base_url}/api/pages/{page}")["html"]
 
-    if not old_page:
-        return "<p></p>" + new_contnet
-
-    split1 = old_page.split(f"<!-- SYSTEM START {system} -->")
-    if (len(split1) == 2):
-        split2 = split1[1].split(f"<!-- SYSTEM END {system} -->")
-        return "\n".join([split1[0], new_contnet, split2[1]])
-    else:
-        return "\n".join([old_page, new_contnet])
+    return processor.insert_system(system, old_page, new_contnet)
+    
 
 def update_page(system, book, page, content):
     print("[BOOKSTACK] Updating page...")

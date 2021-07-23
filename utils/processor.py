@@ -73,9 +73,27 @@ def process_notes(system, notes):
             print(f"[MARKDOWN] {ime} has nothing inside \"notes\"")
 
         markdown += f"\n - RAM: `{vm.memory} MB`"
-        markdown += f"\n - IP: `{vm.ip}`"
+        if vm.ip:
+            markdown += f"\n - IP: `{vm.ip}`"
+        else:
+            markdown += f"\n - IP: `VM ni prižgan`"
         markdown += "\n***\n\n"
 
     markdown += f"<!-- SYSTEM END {system} -->\n"
     print("[MARKDOWN] Markdown processing finished")
     return markdown
+
+def insert_system(system, old, new):
+    if not old:
+        return "<p></p>" + new.strip()
+
+    updated = ""
+
+    split1 = old.split(f"<!-- SYSTEM START {system} -->")
+    if (len(split1) == 2):
+        split2 = split1[1].split(f"<!-- SYSTEM END {system} -->")
+        updated = split1[0] + new + split2[1]
+    else:
+        updated = old + new
+
+    return updated.strip()

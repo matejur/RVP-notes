@@ -33,6 +33,14 @@ book_name = <book_name>     # Podatki se bodo shranili na strani <page_name> v k
 page_name = <page_name>     # Book in page morate ustvariti sami
 ```
 
+## Shranjevanje v datoteko
+
+Z uporabo stikala `--output <file>` se bodo podatki zapisali v datoteko namesto na BookStack. Kakor pri BookStacku se bo datoteka ob naslednjem klicanju programa ustrezno posodobila in ne bo izgubila podatkov drugih sistemov.
+
+```
+python3 main.py <system_name> <config_file> --output <file>
+```
+
 ## Primer uporabe
 Primer config datoteke za sistema "esx_sistem" in "proxmox_sistem" in uporaba programa:
 ```

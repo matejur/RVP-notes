@@ -1,4 +1,5 @@
 import argparse
+import os
 from utils import esx, proxmox, processor, bookstack
 import configparser 
 
@@ -7,6 +8,7 @@ def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("system", help="System name from config file")
     parser.add_argument("file", help="Config file location")
+    parser.add_argument("--output", help="Save to file instad of BookStack")
 
     return parser.parse_args()
 
@@ -33,7 +35,7 @@ def bookstack_creds(config):
 
     return creds
 
-def process_system(system, config):
+def process_system(system, config, args):
     print(f"[STARTING] Started processing {system}")
     creds = read_credentials(config, system)
     if creds["platform"] == "esx":
@@ -47,9 +49,22 @@ def process_system(system, config):
 
     markdown = processor.process_notes(system, notes)
 
-    creds = bookstack_creds(config)
+    if not args.output:
+        creds = bookstack_creds(config)
+        bookstack.upload(system, creds, markdown)
+    else:
+        if os.path.isfile(args.output):
+            file = open(args.output, "r+")
+        else:
+            file = open(args.output, "w+")
 
-    bookstack.upload(system, creds, markdown)
+        previous = file.read()
+        updated = processor.insert_system(system, previous, markdown)
+        file.seek(0)
+        file.write(updated)
+        file.truncate()
+        file.close()
+
     print(f"[FINISHED] Finished processing {system}")
 
 args = get_args()
@@ -64,9 +79,9 @@ if system == "bookstack":
 if system == "all":
     for sys in config.sections():
         if sys != "bookstack":
-            process_system(sys, config)
+            process_system(sys, config, args)
 
 elif system in config:
-    process_system(system, config)
+    process_system(system, config, args)
 else:
     raise SystemExit("[ERROR] There is no config entry for this system...")

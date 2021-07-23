@@ -62,7 +62,7 @@ def get_notes(args):
                 try:
                     ip = res.json()["data"]["result"][1]["ip-addresses"][0]["ip-address"]
                 except:
-                    ip = "VM nima qemu-guest-agenta"
+                    ip = "VM nima qemu-guest-agenta oziroma ni prižgana"
 
             notes.append(VirtualMachine(ime, note, memory, ip))
             
