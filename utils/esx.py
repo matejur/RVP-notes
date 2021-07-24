@@ -51,12 +51,26 @@ def get_VMs(args):
             
 def get_notes(args):
     vms = get_VMs(args)
-
     notes = []
     
     print("[READING] Reading notes from every VM")
     for vm in vms:
-        notes.append(VirtualMachine(vm.summary.config.name, vm.summary.config.annotation, vm.summary.config.memorySizeMB, vm.guest.ipAddress))
+        discs = {}
+        for storage in vm.storage.perDatastoreUsage:
+            datastore = storage.datastore.info.name
+            size = int(storage.committed / 1073741824)
+            
+            if datastore in discs:
+                discs[datastore] += size
+            else:
+                discs[datastore] = size
+
+        discs_text = ""
+        if discs:
+            for storage in discs:
+                discs_text += f"    - `{storage}: {discs[storage]} GiB`\n"
+
+        notes.append(VirtualMachine(vm.summary.config.name, vm.summary.config.annotation, vm.summary.config.memorySizeMB, vm.guest.ipAddress, discs_text))
 
     print("[READING] Successfully read all notes")
 
