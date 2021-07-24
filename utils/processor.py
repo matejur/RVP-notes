@@ -8,6 +8,7 @@ class VirtualMachine:
     note: str
     memory: int
     ip: str
+    diski: str
 
 def check(note, field):
     return field in note and note[field]
@@ -72,11 +73,16 @@ def process_notes(system, notes):
             markdown += "Virtualka/container nima polja notes"
             print(f"[MARKDOWN] {ime} has nothing inside \"notes\"")
 
-        markdown += f"\n - RAM: `{vm.memory} MB`"
+        markdown += f"\n- RAM: `{vm.memory} MB`\n"
         if vm.ip:
-            markdown += f"\n - IP: `{vm.ip}`"
+            markdown += f"- IP: `{vm.ip}`\n"
         else:
-            markdown += f"\n - IP: `VM ni prižgan`"
+            markdown += f"- IP: `VM ni prižgan`\n"
+
+        if vm.diski:
+            markdown += "- DISKI: \n"
+            markdown += vm.diski
+
         markdown += "\n***\n\n"
 
     markdown += f"<!-- SYSTEM END {system} -->\n"

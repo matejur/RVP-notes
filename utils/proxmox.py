@@ -28,6 +28,51 @@ def auth(args):
     print("[CONNECTED] Successfully connected!")
     return ticket
 
+def get_discs(vm_data, type):
+    discs = {}
+    if type == "qemu":
+        for i in range(6):
+            if f"sata{i}" in vm_data:
+                storage = vm_data[f"sata{i}"].split(":")[0]
+                size = int(vm_data[f"sata{i}"].split("size=")[1][:-1])
+
+                if storage in discs:
+                    discs[storage] += size
+                else:
+                    discs[storage] = size
+
+        for i in range(31):
+            if f"scsi{i}" in vm_data:
+                storage = vm_data[f"scsi{i}"].split(":")[0]
+                size = int(vm_data[f"scsi{i}"].split("size=")[1][:-1])
+                
+                if storage in discs:
+                    discs[storage] += size
+                else:
+                    discs[storage] = size
+
+    if type == "lxc":
+        storage = vm_data["rootfs"].split(":")[0]
+        size = int(vm_data["rootfs"].split("size=")[1][:-1])
+        discs[storage] = size
+
+        for i in range(256):
+            if f"mp{i}" in vm_data:
+                storage = vm_data[f"mp{i}"].split(":")[0]
+                size = int(vm_data[f"mp{i}"].split("size=")[1][:-1])
+                
+                if storage in discs:
+                    discs[storage] += size
+                else:
+                    discs[storage] = size
+
+    out = ""
+    if discs:
+        for storage in discs:
+            out += f"    - `{storage}: {discs[storage]} GiB`\n"
+
+    return out
+
 def get_notes(args):
     ticket = auth(args)
     cookie = {"PVEAuthCookie": ticket}
@@ -50,11 +95,13 @@ def get_notes(args):
         res = requests.get(url, cookies=cookie, verify=args["ssl"])
         vm_data = res.json()
         if (vm_data["data"]):
-            ime = vm_data["data"]["name"] if "name" in vm_data["data"] else vm_data["data"]["hostname"]
-            note = vm_data["data"]["description"] if "description" in vm_data["data"] else None
-            memory = vm_data["data"]["memory"] if "memory" in vm_data["data"] else None
+            vm_data = vm_data["data"]
+            ime = vm_data["name"] if "name" in vm_data else vm_data["hostname"]
+            note = vm_data["description"] if "description" in vm_data else None
+            memory = vm_data["memory"] if "memory" in vm_data else None
 
             ip = "IP naslovov LXC containerjev še nisem uspel dobiti"
+            disks = "Work in progress"
 
             if vm["type"] == "qemu":
                 url = f"{base_url}/nodes/{vm['node']}/qemu/{vm['vmid']}/agent/network-get-interfaces"
@@ -64,7 +111,9 @@ def get_notes(args):
                 except:
                     ip = "VM nima qemu-guest-agenta oziroma ni prižgana"
 
-            notes.append(VirtualMachine(ime, note, memory, ip))
+            discs = get_discs(vm_data, vm["type"])
+
+            notes.append(VirtualMachine(ime, note, memory, ip, discs))
             
     print("[READING] Successfully read all notes")
     

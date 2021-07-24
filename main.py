@@ -53,6 +53,7 @@ def process_system(system, config, args):
         creds = bookstack_creds(config)
         bookstack.upload(system, creds, markdown)
     else:
+        print(f"[SAVING] Saving data to {args.output}")
         if os.path.isfile(args.output):
             file = open(args.output, "r+")
         else:
@@ -64,6 +65,7 @@ def process_system(system, config, args):
         file.write(updated)
         file.truncate()
         file.close()
+        print(f"[SAVING] Saving completed")
 
     print(f"[FINISHED] Finished processing {system}")
 
