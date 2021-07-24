@@ -66,12 +66,7 @@ def get_discs(vm_data, type):
                 else:
                     discs[storage] = size
 
-    out = ""
-    if discs:
-        for storage in discs:
-            out += f"    - `{storage}: {discs[storage]} GiB`\n"
-
-    return out
+    return discs
 
 def get_notes(args):
     ticket = auth(args)

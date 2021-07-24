@@ -65,12 +65,7 @@ def get_notes(args):
             else:
                 discs[datastore] = size
 
-        discs_text = ""
-        if discs:
-            for storage in discs:
-                discs_text += f"    - `{storage}: {discs[storage]} GiB`\n"
-
-        notes.append(VirtualMachine(vm.summary.config.name, vm.summary.config.annotation, vm.summary.config.memorySizeMB, vm.guest.ipAddress, discs_text))
+        notes.append(VirtualMachine(vm.summary.config.name, vm.summary.config.annotation, vm.summary.config.memorySizeMB, vm.guest.ipAddress, discs))
 
     print("[READING] Successfully read all notes")
 

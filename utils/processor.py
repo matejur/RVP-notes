@@ -81,7 +81,8 @@ def process_notes(system, notes):
 
         if vm.diski:
             markdown += "- DISKI: \n"
-            markdown += vm.diski
+            for storage in vm.diski:
+                markdown += f"    - `{storage}: {vm.diski[storage]} GiB`\n"
 
         markdown += "\n***\n\n"
 
