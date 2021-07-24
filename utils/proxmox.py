@@ -33,23 +33,55 @@ def get_discs(vm_data, type):
     if type == "qemu":
         for i in range(6):
             if f"sata{i}" in vm_data:
-                storage = vm_data[f"sata{i}"].split(":")[0]
-                size = int(vm_data[f"sata{i}"].split("size=")[1][:-1])
+                try:
+                    storage = vm_data[f"sata{i}"].split(":")[0]
+                    size = int(vm_data[f"sata{i}"].split("size=")[1][:-1])
 
-                if storage in discs:
-                    discs[storage] += size
-                else:
-                    discs[storage] = size
+                    if storage in discs:
+                        discs[storage] += size
+                    else:
+                        discs[storage] = size
+                except:
+                    pass
 
         for i in range(31):
             if f"scsi{i}" in vm_data:
-                storage = vm_data[f"scsi{i}"].split(":")[0]
-                size = int(vm_data[f"scsi{i}"].split("size=")[1][:-1])
-                
-                if storage in discs:
-                    discs[storage] += size
-                else:
-                    discs[storage] = size
+                try:
+                    storage = vm_data[f"scsi{i}"].split(":")[0]
+                    size = int(vm_data[f"scsi{i}"].split("size=")[1][:-1])
+                    
+                    if storage in discs:
+                        discs[storage] += size
+                    else:
+                        discs[storage] = size
+                except:
+                    pass
+
+        for i in range(16):
+            if f"virtio{i}" in vm_data:
+                try:
+                    storage = vm_data[f"virtio{i}"].split(":")[0]
+                    size = int(vm_data[f"virtio{i}"].split("size=")[1][:-1])
+                    
+                    if storage in discs:
+                        discs[storage] += size
+                    else:
+                        discs[storage] = size
+                except:
+                    pass
+
+        for i in range(4):
+            if f"ide{i}" in vm_data:
+                try:
+                    storage = vm_data[f"ide{i}"].split(":")[0]
+                    size = int(vm_data[f"ide{i}"].split("size=")[1][:-1])
+                    
+                    if storage in discs:
+                        discs[storage] += size
+                    else:
+                        discs[storage] = size
+                except:
+                    pass
 
     if type == "lxc":
         storage = vm_data["rootfs"].split(":")[0]
