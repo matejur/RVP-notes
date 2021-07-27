@@ -23,7 +23,7 @@ def read_credentials(config, system):
 
     return creds
 
-def bookstack_creds(config):
+def get_bookstack_creds(config):
     creds = {}
     creds["id"] = config.get("bookstack", "token_id")
     creds["secret"] = config.get("bookstack", "token_secret")
@@ -35,29 +35,27 @@ def bookstack_creds(config):
 
     return creds
 
-def process_system(system, config, args):
+def process_system(system, creds, file_name, ticket, bookstack_creds):
     print(f"[STARTING] Started processing {system}")
-    creds = read_credentials(config, system)
     if creds["platform"] == "esx":
         notes = esx.get_notes(creds)
 
     elif creds["platform"] == "proxmox":   
-        notes = proxmox.get_notes(creds)
+        notes = proxmox.get_notes(creds, ticket)
 
     else:
         raise SystemExit(f"[ERROR] Platform {creds['platform']} is not supported!")
 
     markdown = processor.process_notes(system, notes)
 
-    if not args.output:
-        creds = bookstack_creds(config)
-        bookstack.upload(system, creds, markdown)
+    if not file_name:
+        bookstack.upload(system, bookstack_creds, markdown)
     else:
-        print(f"[SAVING] Saving data to {args.output}")
-        if os.path.isfile(args.output):
-            file = open(args.output, "r+")
+        print(f"[SAVING] Saving data to {file_name}")
+        if os.path.isfile(file_name):
+            file = open(file_name, "r+")
         else:
-            file = open(args.output, "w+")
+            file = open(file_name, "w+")
 
         previous = file.read()
         updated = processor.insert_system(system, previous, markdown)
@@ -69,21 +67,49 @@ def process_system(system, config, args):
 
     print(f"[FINISHED] Finished processing {system}")
 
-args = get_args()
+def main():
+    args = get_args()
 
-config = configparser.RawConfigParser()
-config.read(args.file)
+    config = configparser.RawConfigParser()
+    config.read(args.file)
 
-system = args.system
-if system == "bookstack":
-    raise SystemExit("[ERROR] This name is reserved for BookStack...")
+    bookstack_creds = get_bookstack_creds(config)
 
-if system == "all":
-    for sys in config.sections():
-        if sys != "bookstack":
-            process_system(sys, config, args)
+    system = args.system
+    if system == "bookstack":
+        raise SystemExit("[ERROR] This name is reserved for BookStack...")
 
-elif system in config:
-    process_system(system, config, args)
-else:
-    raise SystemExit("[ERROR] There is no config entry for this system...")
+    if (config.get(system, "type") == "cluster"):
+        for node in config.get(system, "nodes").split(","):
+            node = node.strip()
+
+            if node in config:
+                creds = read_credentials(config, node)
+                ticket = proxmox.auth(creds)
+
+                if ticket:
+                    print(f"[FOUND] {node} is active, getting data...")
+                    process_system(system, creds, args.output, ticket, bookstack_creds)
+                    break
+                else:
+                    print(f"[ERROR] {node} is not active, trying next one...")
+            else:
+                print(f"[ERROR] {node} has no entry in the config file...")
+        else:
+            print(f"[ERROR] No node from the list is active")
+
+    elif system in config:
+        # To morm zlo spremenit ko dobim dostop do vCentra
+        creds = read_credentials(config, system)
+        
+        if creds["platform"] == "proxmox":
+            ticket = proxmox.auth(creds)
+        elif creds["platform"] == "esx":
+            ticket = None
+
+        process_system(system, creds, args.output, ticket, bookstack_creds)
+    else:
+        raise SystemExit("[ERROR] There is no config entry for this system...")
+
+if __name__ == "__main__":
+    main()

@@ -13,6 +13,7 @@ python3 main.py all <config_file>                 # pridobi podatke vseh sistemo
 Vsak sistem mora imeti svoj vnos v config datoteki:
 ```
 [<system_name>]             # Takšno bo tudi ime odseka na BookStack strani
+type = node
 platform = [esx | proxmox] 
 user = <username>           # Pri proxmoxu mora vsebovati tudi realm (e.g. matej@pam)
 pwd = <password>
@@ -41,10 +42,31 @@ Z uporabo stikala `--output <file>` se bodo podatki zapisali v datoteko namesto 
 python3 main.py <system_name> <config_file> --output <file>
 ```
 
+## Proxmox cluster (ESX še ni podprt)
+
+```
+[proxmox]
+type = cluster
+nodes = proxmox1, proxmox2      # seveda lahko naštejete poljubno število sistemov
+
+[proxmox1]
+type = node
+... podatki za proxmox1 ....
+
+[proxmox2]
+type = node
+... podatki za proxmox2 ...
+
+... preostali podatki ...
+```
+
+`python3 main.py proxmox config.txt` - program bo sprva preveril dostopnost `proxmox1`, če je dostopen bo vse podatke prejel iz njega, v nasprotnem primeru bo preveril dostopnost `proxmox2`
+
 ## Primer uporabe
 Primer config datoteke za sistema "esx_sistem" in "proxmox_sistem" in uporaba programa:
 ```
 [esx_sistem]
+type = node
 platform = esx
 user = <esx_username>
 pwd = <esx_password>
@@ -53,6 +75,7 @@ ssl = [True | False]
 port = 443
 
 [proxmox_sistem]
+type = node
 platform = proxmox
 user = <proxmox_username>
 pwd = <proxmox_password>

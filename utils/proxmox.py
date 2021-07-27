@@ -5,7 +5,6 @@ import sys
 base_url = None
 
 def auth(args):
-
     print("[CONNECTING] Trying to connect to the Proxmox server...")
     if not args["ssl"]:
         requests.packages.urllib3.disable_warnings()
@@ -18,11 +17,15 @@ def auth(args):
         "password": args['pwd']
     }
 
-    res = requests.post(url, json=payload, verify=args["ssl"])
-    data = res.json()
+    try:
+        res = requests.post(url, json=payload, verify=args["ssl"])
+        data = res.json()
+    except:
+        return None
 
     if not data["data"]:
-        raise SystemExit("[ERROR] Povezava z danimi podatki ni uspela!", file=sys.stderr)
+        print("[ERROR] Povezava z danimi podatki ni uspela!", file=sys.stderr)
+        return None
 
     ticket = data["data"]["ticket"]
     print("[CONNECTED] Successfully connected!")
@@ -61,8 +64,7 @@ def get_discs(vm_data, type):
 
     return discs
 
-def get_notes(args):
-    ticket = auth(args)
+def get_notes(args, ticket):
     cookie = {"PVEAuthCookie": ticket}
     url = f"{base_url}/cluster/resources"
 
