@@ -28,75 +28,36 @@ def auth(args):
     print("[CONNECTED] Successfully connected!")
     return ticket
 
+def add_disk_type(discs, type, number, data):
+    for i in range(number):
+            if f"{type}{i}" in data:
+                try:
+                    storage = data[f"{type}{i}"].split(":")[0]
+                    size = int(data[f"{type}{i}"].split("size=")[1][:-1])
+
+                    if storage in discs:
+                        discs[storage] += size
+                    else:
+                        discs[storage] = size
+                except:
+                    pass
+    
+    return discs
+
 def get_discs(vm_data, type):
     discs = {}
     if type == "qemu":
-        for i in range(6):
-            if f"sata{i}" in vm_data:
-                try:
-                    storage = vm_data[f"sata{i}"].split(":")[0]
-                    size = int(vm_data[f"sata{i}"].split("size=")[1][:-1])
-
-                    if storage in discs:
-                        discs[storage] += size
-                    else:
-                        discs[storage] = size
-                except:
-                    pass
-
-        for i in range(31):
-            if f"scsi{i}" in vm_data:
-                try:
-                    storage = vm_data[f"scsi{i}"].split(":")[0]
-                    size = int(vm_data[f"scsi{i}"].split("size=")[1][:-1])
-                    
-                    if storage in discs:
-                        discs[storage] += size
-                    else:
-                        discs[storage] = size
-                except:
-                    pass
-
-        for i in range(16):
-            if f"virtio{i}" in vm_data:
-                try:
-                    storage = vm_data[f"virtio{i}"].split(":")[0]
-                    size = int(vm_data[f"virtio{i}"].split("size=")[1][:-1])
-                    
-                    if storage in discs:
-                        discs[storage] += size
-                    else:
-                        discs[storage] = size
-                except:
-                    pass
-
-        for i in range(4):
-            if f"ide{i}" in vm_data:
-                try:
-                    storage = vm_data[f"ide{i}"].split(":")[0]
-                    size = int(vm_data[f"ide{i}"].split("size=")[1][:-1])
-                    
-                    if storage in discs:
-                        discs[storage] += size
-                    else:
-                        discs[storage] = size
-                except:
-                    pass
+        discs = add_disk_type(discs, "sata", 6, vm_data)
+        discs = add_disk_type(discs, "scsi", 31, vm_data)
+        discs = add_disk_type(discs, "virtio", 16, vm_data)
+        discs = add_disk_type(discs, "ide", 4, vm_data)
 
     if type == "lxc":
         storage = vm_data["rootfs"].split(":")[0]
         size = int(vm_data["rootfs"].split("size=")[1][:-1])
         discs[storage] = size
 
-        for i in range(256):
-            if f"mp{i}" in vm_data:
-                storage = vm_data[f"mp{i}"].split(":")[0]
-                size = int(vm_data[f"mp{i}"].split("size=")[1][:-1])
-                
-                if storage in discs:
-                    discs[storage] += size
-                else:
-                    discs[storage] = size
+        discs = add_disk_type(discs, "mp", 256, vm_data)
 
     return discs
 

@@ -94,6 +94,7 @@ def insert_system(system, old, new):
     if not old:
         return "<p></p>" + new.strip()
 
+    new = new.strip()
     updated = ""
 
     split1 = old.split(f"<!-- SYSTEM START {system} -->")
