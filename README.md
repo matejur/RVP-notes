@@ -122,3 +122,68 @@ python3 main.py proxmox_sistem config.txt   # prejme podatke sistema opisanega p
 python3 main.py all config.txt              # prejme podatke obeh sistemov
 ```
 
+## VCenter example
+
+```
+[vcenter]
+type = vcenter
+nodes = esx1, esx2
+platform = esx
+user = <vcenter_username>
+pwd = <vcenter_password>
+host = <vcenter_host>
+ssl = [True | False] 
+port = 443
+
+[esx1]
+type = node
+platform = esx
+user = <esx1_username>
+pwd = <esx1_password>
+host = <esx1_host_>
+ssl = [True | False] 
+port = 443
+
+[esx2]
+type = node
+platform = esx
+user = <esx2_username>
+pwd = <esx2_password>
+host = <esx2_host_>
+ssl = [True | False] 
+port = 443
+```
+
+```
+python3 main.py vcenter config.txt          # podatki se shranijo pod imenom vcenter
+```
+
+## Proxmox cluster example
+
+```
+[proxmox]
+type = cluster
+nodes = proxmox1, proxmox2
+
+[proxmox1]
+type = node
+platform = proxmox
+user = <proxmox1_username>
+pwd = <proxmox1_password>
+host = <proxmox1_host>
+ssl = [True | False] 
+port = 8006
+
+[proxmox2]
+type = node
+platform = proxmox
+user = <proxmox2_username>
+pwd = <proxmox2_password>
+host = <proxmox2_host>
+ssl = [True | False] 
+port = 8006
+```
+
+```
+python3 main.py proxmox config.txt          # podatki se shranijo pod imenom proxmox
+```
