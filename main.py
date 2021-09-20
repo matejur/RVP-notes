@@ -96,7 +96,7 @@ def main():
 
                     if ticket:
                         print(f"[FOUND] {node} is active, getting data...")
-                        process_system(system_name, creds, args.output, bookstack_creds, ticket=ticket)
+                        process_system(system_name, creds, args.output, bookstack_creds, ticket)
                         break
                     else:
                         print(f"[ERROR] {node} is not active, trying next one...")

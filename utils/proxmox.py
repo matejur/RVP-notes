@@ -47,7 +47,7 @@ def add_disk_type(discs, type, number, data):
     
     return discs
 
-def get_discs(vm_data, type):
+def get_disks(vm_data, type):
     discs = {}
     if type == "qemu":
         discs = add_disk_type(discs, "sata", 6, vm_data)
@@ -83,27 +83,28 @@ def get_notes(args, ticket):
             url = f"{base_url}/nodes/{vm['node']}/lxc/{vm['vmid']}/config"
 
         res = requests.get(url, cookies=cookie, verify=args["ssl"])
-        vm_data = res.json()
-        if (vm_data["data"]):
-            vm_data = vm_data["data"]
-            ime = vm_data["name"] if "name" in vm_data else vm_data["hostname"]
-            note = vm_data["description"] if "description" in vm_data else None
-            memory = vm_data["memory"] if "memory" in vm_data else None
+        
+        if res.status_code == 200:
+            vm_data = res.json()
+            if (vm_data["data"]):
+                vm_data = vm_data["data"]
+                ime = vm_data["name"] if "name" in vm_data else vm_data["hostname"]
+                note = vm_data["description"] if "description" in vm_data else None
+                memory = vm_data["memory"] if "memory" in vm_data else None
 
-            ip = "IP naslovov LXC containerjev še nisem uspel dobiti"
-            disks = "Work in progress"
+                ip = "IP naslovov LXC containerjev še nisem uspel dobiti"
 
-            if vm["type"] == "qemu":
-                url = f"{base_url}/nodes/{vm['node']}/qemu/{vm['vmid']}/agent/network-get-interfaces"
-                res = requests.get(url, cookies=cookie, verify=args["ssl"])
-                try:
-                    ip = res.json()["data"]["result"][1]["ip-addresses"][0]["ip-address"]
-                except:
-                    ip = "VM nima qemu-guest-agenta oziroma ni prižgana"
+                if vm["type"] == "qemu":
+                    url = f"{base_url}/nodes/{vm['node']}/qemu/{vm['vmid']}/agent/network-get-interfaces"
+                    res = requests.get(url, cookies=cookie, verify=args["ssl"])
+                    try:
+                        ip = res.json()["data"]["result"][1]["ip-addresses"][0]["ip-address"]
+                    except:
+                        ip = "VM nima qemu-guest-agenta oziroma ni prižgana"
 
-            discs = get_discs(vm_data, vm["type"])
+                disks = get_disks(vm_data, vm["type"])
 
-            notes.append(VirtualMachine(ime, note, memory, ip, discs))
+                notes.append(VirtualMachine(ime, note, memory, ip, disks))
             
     print("[READING] Successfully read all notes")
     
