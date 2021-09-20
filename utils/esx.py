@@ -14,7 +14,6 @@ def connect(args):
         else:
             instance = SmartConnect(host=args["host"], user=args["user"], pwd=args["pwd"], port=args["port"], disableSslCertValidation=True)
             
-
         atexit.register(Disconnect, instance)
     
     except IOError as e:
@@ -22,15 +21,12 @@ def connect(args):
 
     except vim.fault.InvalidLogin as e:
         print("[ERROR] " + e.msg, file=sys.stderr)
-
-    if not instance:
-        raise SystemExit("[ERROR] Povezava z danimi podatki ni uspela!")
-
-    print("[CONNECTED] Successfully connected!")
+    
     return instance
 
-def get_VMs(args):
-    instance = connect(args)
+def get_VMs(instance):
+
+    print("[CONNECTED] Successfully connected!")
     try:
         print("[RETRIEVING] Retrieving all ESX virtual machines")
         content = instance.RetrieveContent()

@@ -6,7 +6,6 @@
 pip install -r requirements.txt
 
 python3 main.py <system_name> <config_file>       # pridobi podatke sistema <system>
-python3 main.py all <config_file>                 # pridobi podatke vseh sistemov
 ```
 
 ## Config file
@@ -42,7 +41,7 @@ Z uporabo stikala `--output <file>` se bodo podatki zapisali v datoteko namesto 
 python3 main.py <system_name> <config_file> --output <file>
 ```
 
-## Proxmox cluster (ESX še ni podprt)
+## Proxmox cluster
 
 ```
 [proxmox]
@@ -51,7 +50,7 @@ nodes = proxmox1, proxmox2      # seveda lahko naštejete poljubno število sist
 
 [proxmox1]
 type = node
-... podatki za proxmox1 ....
+... podatki za proxmox1 ...
 
 [proxmox2]
 type = node
@@ -59,8 +58,33 @@ type = node
 
 ... preostali podatki ...
 ```
-
 `python3 main.py proxmox config.txt` - program bo sprva preveril dostopnost `proxmox1`, če je dostopen bo vse podatke prejel iz njega, v nasprotnem primeru bo preveril dostopnost `proxmox2`
+
+## VCenter
+
+```
+[vcenter]
+type = vcenter
+nodes = esx1, esx2              # seveda lahko naštejete poljubno število sistemov
+platform = esx
+user = <vcenter_user>           # vključno z domeno
+pwd = <vcenter_password>
+host = <vcenter_host>
+ssl = [True | False]
+port = 443
+
+[esx1]
+type = node
+... podatki za esx1 ...
+
+[esx2]
+type = node
+... podatki za esx2 ...
+
+... preostali podatki ...
+```
+`python3 main.py vcenter config.txt` - program bo sprva preveril dostopnost `vcentra`, če je dostopen bo vse podatke prejel iz njega, v nasprotnem primeru bo preveril dostopnost vseh ESX sistemov navedenih pod `nodes`, ter združil podatke iz njih.
+
 
 ## Primer uporabe
 Primer config datoteke za sistema "esx_sistem" in "proxmox_sistem" in uporaba programa:
